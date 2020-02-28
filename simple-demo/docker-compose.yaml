@@ -1,0 +1,29 @@
+version: '3'
+services:
+  prometheus:
+    image: prom/prometheus:v2.14.0
+    restart: always
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - '9090:9090'
+  grafana:
+    image: grafana/grafana:6.5.2
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=pass
+#    volumes:
+#        - ./grafana/provisioning:/etc/grafana/provisioning:ro
+#        - ./grafana/config.ini:/etc/grafana/config.ini:ro
+#        - ./grafana/dashboards/:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - prometheus
+    ports:
+      - "3000:3000"
+  timer_1:
+    build:
+      dockerfile: "./Dockerfile"
+      context: "./timer/"
+    ports:
+      - "4000:4000"
